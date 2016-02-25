@@ -1,0 +1,26 @@
+PATH
+  remote: .
+  specs:
+    ruby-mqtt-bench (0.0.1)
+      concurrent-ruby (~> 1.0)
+      mqtt (~> 0.3)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    concurrent-ruby (1.0.0)
+    concurrent-ruby (1.0.0-java)
+    mqtt (0.3.1)
+    rake (10.5.0)
+
+PLATFORMS
+  java
+  ruby
+
+DEPENDENCIES
+  bundler (~> 1.10)
+  rake (~> 10.0)
+  ruby-mqtt-bench!
+
+BUNDLED WITH
+   1.11.2
