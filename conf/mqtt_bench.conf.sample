@@ -1,0 +1,14 @@
+{
+  "mqtt_opts": {
+    "host": "127.0.0.1",
+    "port": 1883,
+    "keep_alive": 15
+  },
+  "bench_opts": {
+    "topic": "mqtt_bench",
+    "num_clients": 128,
+    "data_size": 64,
+    "num_msgs": 1000,
+    "interval": 0
+  }
+}
