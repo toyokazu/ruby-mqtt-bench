@@ -16,7 +16,7 @@ require 'thwait'
 #     "port": 1883,
 #     "keep_alive": 15
 #   },
-#   "bench_opts": {    
+#   "bench_opts": {
 #     "num_clients": 512,
 #     "data_size": 64,
 #     "num_msgs": 1000,
@@ -32,12 +32,12 @@ require 'thwait'
 # "cid" (client id) and "mid" (message id) have number of digits with
 # maximum number specified in configuration (num_clients and num_msgs.
 # Time to send a message is recorded in the message as time field in ms.
-# 
+#
 class MqttBench
   attr_accessor :results, :total_results
 
-  def initialize
-    conf = JSON.parse(open(File.dirname(__FILE__) + '/../conf/mqtt_bench.conf').read, symbolize_names: true)
+  def initialize(conf_file)
+    conf = JSON.parse(open(conf_file || File.dirname(__FILE__) + '/../conf/mqtt_bench.conf').read, symbolize_names: true)
     @mqtt_opts = {
       host: "127.0.0.1",
       port: 1883,
@@ -46,10 +46,11 @@ class MqttBench
 
     @bench_opts = {
       topic: "mqtt_bench",
-      num_clients: 100,
+      num_clients: 5,
       data_size: 128,
       num_msgs: 100,
-      interval: 0
+      interval: 1,
+      time_key: "time"
     }.merge(conf[:bench_opts])
   end
 
@@ -69,6 +70,7 @@ class MqttBench
       @threads[i] = Thread.new do
         result = {}
         msg_count = 0
+        topic = "#{@bench_opts[:topic]}/#{i}"
         message = {
           cid: i,
           data: @data
@@ -79,8 +81,8 @@ class MqttBench
           client.connect
           while (true)
             message[:mid] = msg_count + 1
-            message[:time] = curr_time
-            client.publish(@bench_opts[:topic], message.to_json)
+            message[@bench_opts[:time_key].to_sym] = curr_time
+            client.publish(topic, message.to_json)
             msg_count += 1
             break if @bench_opts[:num_msgs] - msg_count <= 0
             sleep @bench_opts[:interval]
@@ -128,8 +130,7 @@ class MqttBench
   end
 end
 
-
-bench = MqttBench.new
+bench = MqttBench.new(ARGV[0])
 bench.start
 bench.wait_clients
 bench.print_results
