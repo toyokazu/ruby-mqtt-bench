@@ -58,6 +58,10 @@ class MqttBench
     Time.now.instance_eval { self.to_i * 1000 + (usec/1000) }
   end
 
+  def align_digits(basis, target)
+    sprintf("%0#{@bench_opts[basis].to_s.length}d", target)
+  end
+
   def start
     $stderr.puts "start mqtt #{@mqtt_opts[:host]}"
     @clients = []
@@ -70,9 +74,9 @@ class MqttBench
       @threads[i] = Thread.new do
         result = {}
         msg_count = 0
-        topic = "#{@bench_opts[:topic]}/#{i}"
+        topic = "#{@bench_opts[:topic]}/#{align_digits(:num_clients, i)}"
         message = {
-          cid: i,
+          cid: align_digits(:num_clients, i),
           data: @data
         }
         begin
@@ -80,7 +84,7 @@ class MqttBench
           result[:start_time] = curr_time
           client.connect
           while (true)
-            message[:mid] = msg_count + 1
+            message[:mid] = align_digits(:num_msgs, msg_count + 1)
             message[@bench_opts[:time_key].to_sym] = curr_time
             client.publish(topic, message.to_json)
             msg_count += 1
