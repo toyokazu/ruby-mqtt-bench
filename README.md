@@ -30,7 +30,8 @@ The configuration can be modified by editing mqtt_bench.conf as follows. mqtt_op
         "data_size": 64,
         "num_msgs": 1000,
         "interval": 0,
-        "time_key": "time"
+        "time_key": "time",
+        "timestamp": "timestamp"
       }
     }
 
@@ -40,6 +41,7 @@ The configuration can be modified by editing mqtt_bench.conf as follows. mqtt_op
 - num_msgs: total number of messages sent to a target broker
 - interval: message sending interval
 - time_key: attribute name of time when the message was published
+- timestamp: attribute name for passing timestamp information to fluentd (default nil)
 
 Message is created in JSON format. Because each message has minimum fields,
 minimum message size can be calculated as follows:

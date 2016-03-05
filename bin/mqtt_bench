@@ -3,6 +3,7 @@
 require 'mqtt'
 require 'json'
 require 'thwait'
+require 'time'
 
 # MQTT benchmark software written in Ruby
 # Message is created in JSON format.
@@ -50,7 +51,8 @@ class MqttBench
       data_size: 128,
       num_msgs: 100,
       interval: 1,
-      time_key: "time"
+      time_key: "time",
+      timestamp: nil
     }.merge(conf[:bench_opts])
   end
 
@@ -86,6 +88,7 @@ class MqttBench
           while (true)
             message[:mid] = align_digits(:num_msgs, msg_count + 1)
             message[@bench_opts[:time_key].to_sym] = curr_time
+            message[@bench_opts[:timestamp].to_sym] = Time.now.utc.iso8601 if !@bench_opts[:timestamp].nil?
             client.publish(topic, message.to_json)
             msg_count += 1
             break if @bench_opts[:num_msgs] - msg_count <= 0
